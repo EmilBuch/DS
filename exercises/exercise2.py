@@ -23,7 +23,6 @@ class RoutableMessage(MessageStub):
 
 
 
-
 class RipCommunication(Device):
 
     def __init__(self, index: int, number_of_devices: int, medium: Medium):
@@ -75,9 +74,8 @@ class RipCommunication(Device):
             # this call is only used for synchronous networks
             self.medium().wait_for_next_round()
             
-            if len(self.routing_table) >= self.number_of_devices():
-                return True
-            
+            if len(self.routing_table) >= self.number_of_devices() - 1:
+                 return True
 
     def merge_tables(self, src, table):
         updated = False
@@ -112,3 +110,12 @@ class RipCommunication(Device):
 
     def print_result(self):
         print(f'\tDevice {self.index()} has routing table: {self.routing_table}')
+        
+    def routing_table_complete(self):
+        if len(self.routing_table) < self.number_of_devices()-1:
+            return False
+        for row in self.routing_table:
+            (next_hop, distance) = self.routing_table[row]
+            if distance > (self.number_of_devices()/2):
+                return False
+            return True
